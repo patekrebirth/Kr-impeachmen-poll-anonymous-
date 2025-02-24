@@ -3,7 +3,7 @@ const sqlite3 = require("sqlite3").verbose();
 const cors = require("cors");
 
 const app = express();
-const db = new sqlite3.Database(":memory:"); // 메모리 기반 DB (파일로 저장하려면 수정 가능)
+const db = new sqlite3.Database(":memory:"); // 메모리 기반 SQLite DB
 
 app.use(cors());
 app.use(express.json());
@@ -14,7 +14,7 @@ db.serialize(() => {
     db.run("INSERT INTO votes (option, count) VALUES ('yes', 0), ('no', 0)");
 });
 
-// 투표 처리 API
+// 투표 API
 app.post("/vote", (req, res) => {
     const { option } = req.body;
     if (option !== "yes" && option !== "no") {
@@ -27,7 +27,7 @@ app.post("/vote", (req, res) => {
     });
 });
 
-// 투표 결과 조회 API
+// 투표 결과 API
 app.get("/results", (req, res) => {
     db.all("SELECT * FROM votes", [], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });

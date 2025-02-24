@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>윤석열 탄핵 투표</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        button { margin: 10px; padding: 10px 20px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h1>윤석열 탄핵 투표</h1>
+    <p>당신의 생각은?</p>
+    <button onclick="vote('yes')">탄핵된다</button>
+    <button onclick="vote('no')">기각된다</button>
+    <h2>투표 결과</h2>
+    <p>탄핵된다: <span id="yesCount">0</span> 표</p>
+    <p>기각된다: <span id="noCount">0</span> 표</p>
+
+    <script>
+        async function vote(option) {
+            const response = await fetch("http://localhost:3000/vote", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ option })
+            });
+            if (response.ok) {
+                updateResults();
+            }
+        }
+
+        async function updateResults() {
+            const response = await fetch("http://localhost:3000/results");
+            const data = await response.json();
+            document.getElementById("yesCount").innerText = data.find(row => row.option === "yes").count;
+            document.getElementById("noCount").innerText = data.find(row => row.option === "no").count;
+        }
+
+        updateResults();
+    </script>
+</body>
+</html>
